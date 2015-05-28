@@ -1,19 +1,18 @@
 FROM debian:jessie
 MAINTAINER Georges Alkhouri <georges.alkhouri@stud.htwk-leipzig.de>
 
+ENV DEBIAN_FRONTEND noninteractive
+
 ENV GIT_REPO ""
 ENV IMPORT_VOLUME="/var/lib/import"
 
 RUN apt-get update
-RUN apt-get install -y git libldap-2.4-2 libssl1.0.0 unixodbc bzip2 unzip raptor-utils
+RUN apt-get install -y git virtuoso-opensource bzip2 unzip raptor-utils
 
-# Add virtuoso odbc dependency
-ADD libvirtodbc0_7.2_amd64.deb /
-RUN dpkg -i libvirtodbc0_7.2_amd64.deb
+# We need the virtuoso package to run isql-vt, 
+# but we do not need the server running
+RUN /etc/init.d/virtuoso-opensource-6.1 stop
 
-# Configure odbc for virtuoso
-ADD odbc.ini /etc/
-ADD odbcinst.ini /etc/
 
 ADD restore.sh /usr/bin/
 ADD virtload-classic.sh /usr/bin/

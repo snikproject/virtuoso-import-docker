@@ -1,7 +1,5 @@
 #!/bin/sh
 
-echo "PASSWORD=$VIRTUOSO_ENV_PWDDBA" >> /etc/odbc.ini
-
 if [ -z "$GIT_REPO" ]; then
 	:
 	#data is in import volume

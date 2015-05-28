@@ -3,16 +3,17 @@
 # Script for loading an rdf file into a virtuoso store using
 # virtuoso's isql
 # Usage: sourceFile graphName port userName passWord
-# e.g. <cmd> myfile.n3.bzip2 http://mygraph.org dba dba
+# e.g. <cmd> myfile.n3.bzip2 http://mygraph.org server_adress dba dba
 
 
-virt_isql="$(dirname $0)/isql"
+virt_isql="$(dirname $0)/isql-vt"
 
 unzip_source=$1
 
 virt_graphName=$2
-virt_userName=$3
-virt_passWord=$4
+virt_serverAdress=$3
+virt_userName=$4
+virt_passWord=$5
 
 unzip_extension=${unzip_source##*.}
 unzip_target=${unzip_source%.*}
@@ -45,7 +46,6 @@ if [ $rapper_extension != "nt" ]; then
     echo "Converting to n-triples. File is $rapper_target"
     rapper $rapper_source -i guess -o ntriples >> $rapper_target
 fi
-
 #echo "Unzip target= $unzip_target"
 split_size=$(stat -c%s "$rapper_target")
 
@@ -53,8 +53,8 @@ echo "Size = $split_size"
 
 
 createGraphStmt="EXEC=Sparql Create Silent Graph <$virt_graphName>"
-echo $virt_isql "VOS" "$virt_userName" "$virt_passWord" "$createGraphStmt"
-$virt_isql "VOS" "$virt_userName" "$virt_passWord" "$createGraphStmt"
+echo $virt_isql "$virt_serverAdress" "$virt_userName" "$virt_passWord" "$createGraphStmt"
+$virt_isql "$virt_serverAdress" "$virt_userName" "$virt_passWord" "$createGraphStmt"
 
 
 if [ $split_size -gt 5000000 ]; then
@@ -73,7 +73,7 @@ if [ $split_size -gt 5000000 ]; then
 	do
 		load_target="$split_dir/$file"
        		load_query="EXEC=TTLP_MT(file_to_string_output('$load_target'), '', '$virt_graphName', 255);"
-	        $virt_isql "VOS" "$virt_userName" "$virt_passWord" "$load_query"
+	        $virt_isql "$virt_serverAdress" "$virt_userName" "$virt_passWord" "$load_query"
 #		echo "$virt_isql" "$virt_userName" "$virt_passWord" "$load_query"
 	done;
 	echo "done"
@@ -90,8 +90,8 @@ else
 	load_query="EXEC=TTLP_MT(file_to_string_output('$load_target'), '', '$virt_graphName', 255)"
 
 
-	echo "$virt_isql VOS $virt_userName $virt_passWord $load_query"
+	echo "$virt_isql $virt_serverAdress $virt_userName $virt_passWord $load_query"
 
 
-	$virt_isql "VOS" "$virt_userName" "$virt_passWord" "$load_query"
+	$virt_isql "$virt_serverAdress" "$virt_userName" "$virt_passWord" "$load_query"
 fi
