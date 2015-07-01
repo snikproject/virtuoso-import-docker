@@ -18,19 +18,17 @@ then
     exit 1
 fi
 
-exec 3<&0
-
-for graph_file in *.graph;
-do
-    exec 0< ${graph_file}
-    read graph
+for graph_file in *.graph; do
+    graph=`head -n1 ${graph_file}`
     echo ${graph}
     ${cmd} exec="sparql CREATE SILENT GRAPH <${graph}>;"
 done
 
-exec 0<&3
-
-${cmd} exec="ld_dir ('${PWD}', '*.ttl', NULL);"
+#ensure that all supported formats get into the load list 
+#(since we have to excluse graph-files *.* won't do the trick
+for ext in nt nq owl rdf trig ttl xml gz; do
+  ${cmd} exec="ld_dir ('/import_store', '*.${ext}', NULL);"
+done
 
 # For docker there is no job management by default to put multiple loaders to the background with "&"
 ${cmd} exec="rdf_loader_run();"
