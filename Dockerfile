@@ -10,10 +10,9 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV IMPORT_VOLUME="/import"
 
 RUN apt-get update
-RUN apt-get install -y git virtuoso-opensource
+RUN apt-get install -y git virtuoso-opensource pigz pbzip2
 
 ADD import.sh /
-ADD test_connection.sh /
 
 VOLUME $IMPORT_VOLUME
 
