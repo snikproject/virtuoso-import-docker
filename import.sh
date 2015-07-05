@@ -45,15 +45,14 @@ bz2_to_gz () {
     bz2_archives=( "$wd"/*bz2 )
     bz2_archive_count=${#bz2_archives[@]}
     if [[ $bz2_archive_count -eq 0 || ( $bz2_archive_count -eq 1 && "$bz2_archives" == "${wd}/*bz2" ) ]]; then
-        #nothing to convert
-        exit 0
-    else
-        echo "[INFO] converting $bz2_archive_count bzip2 archives to gzip:"
-        for archive in ${bz2_archives[@]}; do
-            echo "[INFO] converting $archive"
-            pbzip2 -dc $archive | pigz - > ${archive%bz2}gz
-        done
+        return 0
     fi
+
+    echo "[INFO] converting $bz2_archive_count bzip2 archives to gzip:"
+    for archive in ${bz2_archives[@]}; do
+        echo "[INFO] converting $archive"
+        pbzip2 -dc $archive | pigz - > ${archive%bz2}gz
+    done
 }
 
 echo "copying import files to store volume"
