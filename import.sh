@@ -19,7 +19,7 @@ test_connection () {
 
     t=$1
 
-    res=$( ${cmd} )
+    ${cmd} >& /dev/null
     while [[ $? -ne 0 ]] ;
     do
         echo -n "."
@@ -31,7 +31,7 @@ test_connection () {
             echo "timeout"
             exit 2
         fi
-        res=$( ${cmd} )
+        ${cmd} >& /dev/null
     done
 }
 
@@ -69,22 +69,25 @@ if [ $? -eq 2 ]; then
     exit 1
 fi
 
+echo "[INFO] initializing named graphs"
 for graph_file in *.graph; do
     graph=`head -n1 ${graph_file}`
-    echo ${graph}
-    ${cmd} exec="sparql CREATE SILENT GRAPH <${graph}>;"
+    ${cmd} exec="sparql CREATE SILENT GRAPH <${graph}>;" > /dev/null
 done
+
 
 #ensure that all supported formats get into the load list 
 #(since we have to excluse graph-files *.* won't do the trick
+echo "[INFO] registring RDF documents for import"
 for ext in nt nq owl rdf trig ttl xml gz; do
-  ${cmd} exec="ld_dir ('/import_store', '*.${ext}', NULL);"
+  ${cmd} exec="ld_dir ('/import_store', '*.${ext}', NULL);" > /dev/null
 done
 
 # For docker there is no job management by default to put multiple loaders to the background with "&"
-${cmd} exec="rdf_loader_run();"
+echo "[INFO] starting bulk loader"
+${cmd} exec="rdf_loader_run();" > /dev/null
 
-echo "done loading graphs (start hanging around idle)"
+echo "[INFO] done loading graphs (start hanging around idle)"
 
 # idle because else docker compose would terminate all the other containers
 # http://stackoverflow.com/questions/30811855/docker-compose-with-one-terminating-container
