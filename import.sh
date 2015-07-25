@@ -7,9 +7,22 @@ host="store"
 port=1111
 user="dba"
 password=${STORE_ENV_PWDDBA}
-cmd="${bin} ${host}:${port} ${user} ${password}"
 
 store_import_dir='/import_store'
+
+run_virtuoso_cmd () {
+  VIRT_OUTPUT=`echo "$1" | "$bin" -H "$host" -S "$port" -U "$user" -P "$password" 2>&1`
+  VIRT_RETCODE=$?
+  if [[ $VIRT_RETCODE -eq 0 ]]; then
+    echo "$VIRT_OUTPUT" | tail -n+5 | perl -pe 's|^SQL> ||g'
+    return 0
+  else
+    echo -e "[ERROR] running the these commands in virtuoso:\n$1\nerror code: $VIRT_RETCODE\noutput:"
+    echo "$VIRT_OUTPUT"
+    let 'ret = VIRT_RETCODE + 128'
+    return $ret
+  fi
+}
 
 test_connection () {
     if [[ -z $1 ]]; then
@@ -19,7 +32,7 @@ test_connection () {
 
     t=$1
 
-    ${cmd} >& /dev/null
+    run_virtuoso_cmd 'status();'
     while [[ $? -ne 0 ]] ;
     do
         echo -n "."
@@ -29,10 +42,24 @@ test_connection () {
         if [ $t -eq 0 ]
         then
             echo "timeout"
-            exit 2
+            return 2
         fi
-        ${cmd} >& /dev/null
+        run_virtuoso_cmd 'status();'
     done
+}
+
+run_virtuoso_cmd () {
+  VIRT_OUTPUT=`echo "$1" | "$bin" -H "$host" -S "$port" -U "$user" -P "$password" 2>&1`
+  VIRT_RETCODE=$?
+  if [[ $VIRT_RETCODE -eq 0 ]]; then
+    echo "$VIRT_OUTPUT" | tail -n+5 | perl -pe 's|^SQL> ||g'
+    return 0
+  else
+    echo -e "[ERROR] running the these commands in virtuoso:\n$1\nerror code: $VIRT_RETCODE\noutput:"
+    echo "$VIRT_OUTPUT"
+    let 'ret = VIRT_RETCODE + 128'
+    return $ret
+  fi
 }
 
 bz2_to_gz () {
@@ -52,6 +79,7 @@ bz2_to_gz () {
     for archive in ${bz2_archives[@]}; do
         echo "[INFO] converting $archive"
         pbzip2 -dc $archive | pigz - > ${archive%bz2}gz
+        rm $archive
     done
 }
 
@@ -63,7 +91,9 @@ cd "$store_import_dir"
 bz2_to_gz "$store_import_dir"
 
 echo "[INFO] waiting for store to come online"
-test_connection 10
+
+: ${CONNECTION_ATTEMPTS:=10}
+test_connection "${CONNECTION_ATTEMPTS}"
 if [ $? -eq 2 ]; then
     echo "[ERROR] store not reachable"
     exit 1
@@ -72,7 +102,7 @@ fi
 echo "[INFO] initializing named graphs"
 for graph_file in *.graph; do
     graph=`head -n1 ${graph_file}`
-    ${cmd} exec="sparql CREATE SILENT GRAPH <${graph}>;" > /dev/null
+    run_virtuoso_cmd "sparql CREATE SILENT GRAPH <${graph}>;"
 done
 
 
@@ -80,12 +110,40 @@ done
 #(since we have to excluse graph-files *.* won't do the trick
 echo "[INFO] registring RDF documents for import"
 for ext in nt nq owl rdf trig ttl xml gz; do
-  ${cmd} exec="ld_dir ('/import_store', '*.${ext}', NULL);" > /dev/null
+  run_virtuoso_cmd "ld_dir ('/import_store', '*.${ext}', NULL);"
 done
 
-# For docker there is no job management by default to put multiple loaders to the background with "&"
-echo "[INFO] starting bulk loader"
-${cmd} exec="rdf_loader_run();" > /dev/null
+echo "[INFO] deactivating auto-indexing"
+run_virtuoso_cmd "DB.DBA.VT_BATCH_UPDATE ('DB.DBA.RDF_OBJ', 'ON', NULL);"
+
+
+echo '[INFO] Starting load process...';
+
+load_cmds=`cat <<EOF
+log_enable(2);
+checkpoint_interval(-1);
+set isolation = 'uncommitted';
+rdf_loader_run();
+log_enable(1);
+checkpoint_interval(60);
+EOF`
+run_virtuoso_cmd "$load_cmds";
+
+echo "[INFO] making checkpoint..."
+run_virtuoso_cmd 'checkpoint;'
+
+echo "[INFO] re-activating auto-indexing"
+run_virtuoso_cmd "DB.DBA.RDF_OBJ_FT_RULE_ADD (null, null, 'All');"
+run_virtuoso_cmd 'DB.DBA.VT_INC_INDEX_DB_DBA_RDF_OBJ ();'
+
+echo "[INFO] making checkpoint..."
+run_virtuoso_cmd 'checkpoint;'
+
+echo "[INFO] update/filling of geo index"
+run_virtuoso_cmd 'rdf_geo_fill();'
+
+echo "[INFO] making checkpoint..."
+run_virtuoso_cmd 'checkpoint;'
 
 echo "[INFO] done loading graphs (start hanging around idle)"
 
