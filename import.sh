@@ -2,12 +2,15 @@
 
 set -o nounset
 
+[[ ! -z "$DLD_DEV" ]] && set -x #conditional debug output
+
 bin="isql-vt"
 host="store"
 port=1111
 user="dba"
 password=${STORE_ENV_PWDDBA}
 
+import_source_dir=${IMPORT_SRC:-/import}
 store_import_dir='/import_store'
 
 run_virtuoso_cmd () {
@@ -84,7 +87,7 @@ bz2_to_gz () {
 }
 
 echo "copying import files to store volume"
-cp /import/* "$store_import_dir"
+cp "${import_source_dir%/}"/* "$store_import_dir"
 
 cd "$store_import_dir"
 
@@ -145,10 +148,4 @@ run_virtuoso_cmd 'rdf_geo_fill();'
 echo "[INFO] making checkpoint..."
 run_virtuoso_cmd 'checkpoint;'
 
-echo "[INFO] done loading graphs (start hanging around idle)"
-
-# idle because else docker compose would terminate all the other containers
-# http://stackoverflow.com/questions/30811855/docker-compose-with-one-terminating-container
-#
-# is /dev/zero better for this?
-tail -f /dev/null
+echo "[INFO] bulk load done; terminating loader"
