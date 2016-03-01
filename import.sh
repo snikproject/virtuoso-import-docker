@@ -2,6 +2,7 @@
 
 set -o nounset
 
+${DLD_DEV:=}
 [[ ! -z "$DLD_DEV" ]] && set -x #conditional debug output
 
 bin="isql-vt"
@@ -95,7 +96,7 @@ bz2_to_gz "$store_import_dir"
 
 echo "[INFO] waiting for store to come online"
 
-: ${CONNECTION_ATTEMPTS:=10}
+: ${CONNECTION_ATTEMPTS:=60}
 test_connection "${CONNECTION_ATTEMPTS}"
 if [ $? -eq 2 ]; then
     echo "[ERROR] store not reachable"
