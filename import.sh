@@ -52,20 +52,6 @@ test_connection () {
     done
 }
 
-run_virtuoso_cmd () {
-  VIRT_OUTPUT=`echo "$1" | "$bin" -H "$host" -S "$port" -U "$user" -P "$password" 2>&1`
-  VIRT_RETCODE=$?
-  if [[ $VIRT_RETCODE -eq 0 ]]; then
-    echo "$VIRT_OUTPUT" | tail -n+5 | perl -pe 's|^SQL> ||g'
-    return 0
-  else
-    echo -e "[ERROR] running the these commands in virtuoso:\n$1\nerror code: $VIRT_RETCODE\noutput:"
-    echo "$VIRT_OUTPUT"
-    let 'ret = VIRT_RETCODE + 128'
-    return $ret
-  fi
-}
-
 bz2_to_gz () {
     if [[ -z "$1" || ! -d "$1"  ]]; then
         echo "[ERROR] not a valid directory path: $wd"
