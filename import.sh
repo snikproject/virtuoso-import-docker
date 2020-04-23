@@ -5,6 +5,7 @@ set -o nounset
 ${DLD_DEV:=}
 [[ ! -z "$DLD_DEV" ]] && set -x #conditional debug output
 
+# Definition of the isql connection to Virtuoso
 bin="isql-vt"
 host="store"
 port=1111
@@ -14,6 +15,7 @@ password=${STORE_ENV_PWDDBA}
 import_source_dir=${IMPORT_SRC:-/import}
 store_import_dir='/import_store'
 
+# Wrap the execution of isql commands to receive the return code and output
 run_virtuoso_cmd () {
   VIRT_OUTPUT=`echo "$1" | "$bin" -H "$host" -S "$port" -U "$user" -P "$password" 2>&1`
   VIRT_RETCODE=$?
@@ -28,6 +30,8 @@ run_virtuoso_cmd () {
   fi
 }
 
+# Check if the virtuoso is up and running
+# This is needed during the bootstrapping process in a docker setup
 test_connection () {
     if [[ -z $1 ]]; then
         echo "[ERROR] missing argument: retry attempts"
@@ -52,6 +56,7 @@ test_connection () {
     done
 }
 
+# Obviously some method to convert all bzip2 archives to gzip
 bz2_to_gz () {
     if [[ -z "$1" || ! -d "$1"  ]]; then
         echo "[ERROR] not a valid directory path: $wd"
@@ -95,8 +100,7 @@ for graph_file in *.graph; do
     run_virtuoso_cmd "sparql CREATE SILENT GRAPH <${graph}>;"
 done
 
-
-#ensure that all supported formats get into the load list 
+#ensure that all supported formats get into the load list
 #(since we have to excluse graph-files *.* won't do the trick
 echo "[INFO] registring RDF documents for import"
 for ext in nt nq owl rdf trig ttl xml gz; do
@@ -105,7 +109,6 @@ done
 
 echo "[INFO] deactivating auto-indexing"
 run_virtuoso_cmd "DB.DBA.VT_BATCH_UPDATE ('DB.DBA.RDF_OBJ', 'ON', NULL);"
-
 
 echo '[INFO] Starting load process...';
 
