@@ -11,6 +11,10 @@ The link alias for the import container has to be `virtuoso`.
 
 - Fix `file_to_string_output` error from virtload-classic.sh script.
 
+`import.sh` is used to import directories of rdf graphs into virtuoso with the Build loading process (http://vos.openlinksw.com/owiki/wiki/VOS/VirtBulkRDFLoader).
+
+`virtload-classic.sh` can import big files by splitting them into chunks
+
 # Usage instructions
 
 Coming soon
