@@ -6,11 +6,12 @@ LABEL org.aksw.dld=true org.aksw.dld.type="import" org.aksw.dld.require.store="v
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update
-RUN apt-get install -y git pigz pbzip2
+RUN apt-get install -y git pigz pbzip2 unixodbc
 RUN mkdir /virtuoso
 RUN mkdir /virtuoso/local
 
 ADD import.sh /virtuoso
+ADD odbc.ini /etc/odbc.ini
 
 WORKDIR /virtuoso
 
