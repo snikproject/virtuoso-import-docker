@@ -18,8 +18,7 @@ port=1111
 user="dba"
 password=${DBA_PASSWORD}
 
-import_source_dir=${IMPORT_SRC:-/import}
-store_import_dir='/import_store'
+store_import_dir="${VIRTUOSO_IMPORT_DIR}"
 
 # Wrap the execution of isql commands to receive the return code and output
 run_virtuoso_cmd () {
@@ -83,9 +82,6 @@ bz2_to_gz () {
         rm $archive
     done
 }
-
-echo "copying import files to store volume"
-cp "${import_source_dir%/}"/* "$store_import_dir"
 
 cd "$store_import_dir"
 

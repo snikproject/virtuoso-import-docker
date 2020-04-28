@@ -20,4 +20,7 @@ The link alias for the import container has to be `virtuoso`.
 
 Coming soon
 
-To start the container, it requires the virtuoso password to be set as an environment variable with the name `DBA_PASSWORD`. It should be the same that you provide to the `tenforce/virtuoso`.
+To start the container, it requires some environment variables:
+
+- `DBA_PASSWORD`: The virtuoso password. It should be the same as what you provide to the `tenforce/virtuoso`.
+- `VIRTUOSO_IMPORT_DIR`: The location of the models to be imported. It should be linked as a common volume to `tenforce/virtuoso` and the importer. The path should also be the same within both containers.
