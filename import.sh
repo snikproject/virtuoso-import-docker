@@ -16,7 +16,7 @@ bin="isql-vt"
 host="store"
 port=1111
 user="dba"
-password=${STORE_ENV_PWDDBA}
+password=${DBA_PASSWORD}
 
 import_source_dir=${IMPORT_SRC:-/import}
 store_import_dir='/import_store'
