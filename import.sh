@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+
+# http://docs.openlinksw.com/virtuoso/fn_ld_dir/
+#${cmd} exec="ld_dir ('${PWD}', '*.ttl', NULL);"
+# spawn multiple threads
+# http://vos.openlinksw.com/owiki/wiki/VOS/VirtBulkRDFLoader
+
 set -o nounset
 
 ${DLD_DEV:=}

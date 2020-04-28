@@ -1,0 +1,19 @@
+version: "3.7"
+
+services:
+    virtuoso:
+        image: tenforce/virtuoso
+        volumes:
+            - bin:/usr/local/virtuoso-opensource
+            
+    importer:
+        build: ./
+        volumes:
+            - type: volume
+              source: bin
+              target: /virtuoso/local
+              volume:
+                  nocopy: true
+            
+volumes:
+    bin: {}
