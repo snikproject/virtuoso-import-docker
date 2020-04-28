@@ -8,6 +8,9 @@ services:
             
     importer:
         build: ./
+        environment:
+            DBA_PASSWORD: dba
+            VIRTUOSO_IMPORT_DIR: /tmp
         volumes:
             - type: volume
               source: bin

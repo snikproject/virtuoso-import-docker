@@ -13,7 +13,7 @@ ${DLD_DEV:=}
 
 # Definition of the isql connection to Virtuoso
 bin="/virtuoso/local/bin/isql-v"
-host="store"
+host="virtuoso"
 port=1111
 user="dba"
 password=${DBA_PASSWORD}
