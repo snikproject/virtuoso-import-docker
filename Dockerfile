@@ -6,7 +6,7 @@ LABEL org.aksw.dld=true org.aksw.dld.type="import" org.aksw.dld.require.store="v
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update
-RUN apt-get install -y git pigz pbzip2 libreadline-dev
+RUN apt-get install -y git pigz pbzip2 virtuoso-opensource
 RUN mkdir /virtuoso
 RUN mkdir /virtuoso/local
 

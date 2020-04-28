@@ -12,7 +12,7 @@ ${DLD_DEV:=}
 [[ ! -z "$DLD_DEV" ]] && set -x #conditional debug output
 
 # Definition of the isql connection to Virtuoso
-bin="/virtuoso/local/bin/isql-v"
+bin="isql-vt"
 host="virtuoso"
 port=1111
 user="dba"
@@ -106,7 +106,7 @@ done
 #(since we have to excluse graph-files *.* won't do the trick
 echo "[INFO] registring RDF documents for import"
 for ext in nt nq owl rdf trig ttl xml gz; do
-  run_virtuoso_cmd "ld_dir ('/import_store', '*.${ext}', NULL);"
+  run_virtuoso_cmd "ld_dir ('${store_import_dir}', '*.${ext}', NULL);"
 done
 
 echo "[INFO] deactivating auto-indexing"
