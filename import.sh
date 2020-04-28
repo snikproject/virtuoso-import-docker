@@ -12,7 +12,7 @@ ${DLD_DEV:=}
 [[ ! -z "$DLD_DEV" ]] && set -x #conditional debug output
 
 # Definition of the isql connection to Virtuoso
-bin="isql-vt"
+bin="/virtuoso/local/bin/isql-v"
 host="store"
 port=1111
 user="dba"
