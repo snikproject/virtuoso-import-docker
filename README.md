@@ -11,6 +11,7 @@ The link alias for the import container has to be `virtuoso`.
 # Usage instructions
 
 `import.sh` is used to import directories of rdf graphs into virtuoso with the built-in loading process (http://vos.openlinksw.com/owiki/wiki/VOS/VirtBulkRDFLoader).
+We currently support uncompressed graph files, but also gzip and bzip2 compressed graph files. You should prefer to use gzip, as the bzip2 files are transformed to gzip. xz does currently not work.
 
 To start the container, it requires some environment variables:
 
