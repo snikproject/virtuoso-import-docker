@@ -96,6 +96,9 @@ if [ $? -eq 2 ]; then
     exit 1
 fi
 
+# Give some more seconds to the virtuoso to really accept updates
+sleep 3
+
 echo "[INFO] initializing named graphs"
 for graph_file in *.graph; do
     graph=`head -n1 ${graph_file}`
