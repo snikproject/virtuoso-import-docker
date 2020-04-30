@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-
-# http://docs.openlinksw.com/virtuoso/fn_ld_dir/
-#${cmd} exec="ld_dir ('${PWD}', '*.ttl', NULL);"
-# spawn multiple threads
-# http://vos.openlinksw.com/owiki/wiki/VOS/VirtBulkRDFLoader
-
 set -o nounset
 
 ${DLD_DEV:=}
@@ -61,31 +55,7 @@ test_connection () {
     done
 }
 
-# Obviously some method to convert all bzip2 archives to gzip
-bz2_to_gz () {
-    if [[ -z "$1" || ! -d "$1"  ]]; then
-        echo "[ERROR] not a valid directory path: $wd"
-        exit 1
-    fi
-
-    wd="$1"
-    bz2_archives=( "$wd"/*bz2 )
-    bz2_archive_count=${#bz2_archives[@]}
-    if [[ $bz2_archive_count -eq 0 || ( $bz2_archive_count -eq 1 && "$bz2_archives" == "${wd}/*bz2" ) ]]; then
-        return 0
-    fi
-
-    echo "[INFO] converting $bz2_archive_count bzip2 archives to gzip:"
-    for archive in ${bz2_archives[@]}; do
-        echo "[INFO] converting $archive"
-        pbzip2 -dc $archive | pigz - > ${archive%bz2}gz
-        rm $archive
-    done
-}
-
 cd "$store_import_dir"
-
-bz2_to_gz "$store_import_dir"
 
 echo "[INFO] waiting for store to come online"
 
@@ -108,7 +78,8 @@ done
 #ensure that all supported formats get into the load list
 #(since we have to excluse graph-files *.* won't do the trick
 echo "[INFO] registring RDF documents for import"
-for ext in nt nq owl rdf trig ttl xml gz; do
+for ext in nt nq owl rdf trig ttl xml gz gzip bz2 xz; do
+  # documentation: # http://docs.openlinksw.com/virtuoso/fn_ld_dir/
   run_virtuoso_cmd "ld_dir ('${store_import_dir}', '*.${ext}', NULL);"
 done
 
@@ -116,6 +87,8 @@ echo "[INFO] deactivating auto-indexing"
 run_virtuoso_cmd "DB.DBA.VT_BATCH_UPDATE ('DB.DBA.RDF_OBJ', 'ON', NULL);"
 
 echo '[INFO] Starting load process...';
+
+# Bulk-loading: http://vos.openlinksw.com/owiki/wiki/VOS/VirtBulkRDFLoader
 
 load_cmds=`cat <<EOF
 log_enable(2);
