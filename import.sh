@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-
-# http://docs.openlinksw.com/virtuoso/fn_ld_dir/
-#${cmd} exec="ld_dir ('${PWD}', '*.ttl', NULL);"
-# spawn multiple threads
-# http://vos.openlinksw.com/owiki/wiki/VOS/VirtBulkRDFLoader
-
 set -o nounset
 
 ${DLD_DEV:=}
@@ -106,6 +100,7 @@ done
 #(since we have to excluse graph-files *.* won't do the trick
 echo "[INFO] registring RDF documents for import"
 for ext in nt nq owl rdf trig ttl xml gz; do
+  # documentation: # http://docs.openlinksw.com/virtuoso/fn_ld_dir/
   run_virtuoso_cmd "ld_dir ('${store_import_dir}', '*.${ext}', NULL);"
 done
 
@@ -113,6 +108,8 @@ echo "[INFO] deactivating auto-indexing"
 run_virtuoso_cmd "DB.DBA.VT_BATCH_UPDATE ('DB.DBA.RDF_OBJ', 'ON', NULL);"
 
 echo '[INFO] Starting load process...';
+
+# Bulk-loading: http://vos.openlinksw.com/owiki/wiki/VOS/VirtBulkRDFLoader
 
 load_cmds=`cat <<EOF
 log_enable(2);
