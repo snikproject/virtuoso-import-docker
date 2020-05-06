@@ -5,6 +5,17 @@ set -o nounset
 ${DLD_DEV:=}
 [[ ! -z "$DLD_DEV" ]] && set -x #conditional debug output
 
+# Git as source?
+if [ -z "$GIT_REPO" ]; then
+	:
+	#data is in import volume
+else
+	#clean the import folder
+	rm -r $VIRTUOSO_IMPORT_DIR/*
+	#git clone to import volume
+	git clone $GIT_REPO $VIRTUOSO_IMPORT_DIR
+fi
+
 # Definition of the isql connection to Virtuoso
 bin="isql-vt"
 host="virtuoso"

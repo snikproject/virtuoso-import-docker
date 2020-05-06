@@ -11,6 +11,7 @@ services:
         environment:
             DBA_PASSWORD: dba
             VIRTUOSO_IMPORT_DIR: /tmp
+            GIT_REPO: https://github.com/AKSW/pfarrerbuch.jekyllrdf.git
         volumes:
             - type: volume
               source: bin
