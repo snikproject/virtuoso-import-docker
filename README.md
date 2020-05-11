@@ -1,7 +1,7 @@
 # Virtuoso Import Docker
 
 The purpose of this docker is to load graph dumps into a linked virtuoso store container.
-Currently we are working to support a linke `tenforce/virtuoso` container.
+Currently we are working to support the `tenforce/virtuoso` container.
 
 Dump data can be inserted to the import container through an exposed volume or with a git repository declared as an environment variable.
 To enable cloning of private git repositories the import container exposes its `/root/.ssh` folder for SSH key insertion.
@@ -17,6 +17,13 @@ To start the container, it requires some environment variables:
 
 - `DBA_PASSWORD`: The virtuoso password. It should be the same as what you provide to the `tenforce/virtuoso`.
 - `VIRTUOSO_IMPORT_DIR`: The location of the models to be imported. It should be linked as a common volume to `tenforce/virtuoso` and the importer. The path should also be the same within both containers.
+- `GIT_REPO`: The URL of the repository used via `git clone`.
+
+Either you run the container 
+
+- with /virtuoso/import.sh as command for importing data from the volume or
+- you use /virtuoso/git_import.sh for importing data one time from the repository or
+- without any command in order to enable cron for pulling the repository every 5 minutes.
 
 # Information for the future
 
