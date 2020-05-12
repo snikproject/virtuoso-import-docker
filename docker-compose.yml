@@ -3,8 +3,6 @@ version: "3.7"
 services:
     virtuoso:
         image: tenforce/virtuoso
-        volumes:
-            - bin:/usr/local/virtuoso-opensource
             
     importer:
         build: ./
@@ -12,12 +10,3 @@ services:
             DBA_PASSWORD: dba
             VIRTUOSO_IMPORT_DIR: /tmp
             GIT_REPO: https://github.com/AKSW/pfarrerbuch.jekyllrdf.git
-        volumes:
-            - type: volume
-              source: bin
-              target: /virtuoso/local
-              volume:
-                  nocopy: true
-            
-volumes:
-    bin: {}
