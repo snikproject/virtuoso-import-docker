@@ -9,14 +9,18 @@ RUN apt-get update
 RUN apt-get install -y git pigz pbzip2 virtuoso-opensource cron
 RUN mkdir /virtuoso
 RUN mkdir /virtuoso/local
+RUN mkdir /virtuoso/git
+RUN mkdir /virtuoso/data
 
 ADD import.sh /virtuoso
 ADD git_import.sh /virtuoso
 ADD git_update.sh /virtuoso
+ADD git_write.sh /virtuoso
 
 RUN chmod 0744 /virtuoso/import.sh
 RUN chmod 0744 /virtuoso/git_import.sh
 RUN chmod 0744 /virtuoso/git_update.sh
+RUN chmod 0744 /virtuoso/git_write.sh
 
 WORKDIR /virtuoso
 

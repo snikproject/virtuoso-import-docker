@@ -97,6 +97,7 @@ echo "[INFO] initializing named graphs"
 for graph_file in *.graph; do
     graph=`head -n1 ${graph_file}`
     run_virtuoso_cmd "sparql CREATE SILENT GRAPH <${graph}>;"
+    echo "Created graph: $graph"
 done
 
 #ensure that all supported formats get into the load list
