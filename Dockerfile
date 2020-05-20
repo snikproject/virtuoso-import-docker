@@ -16,6 +16,7 @@ ADD import.sh /virtuoso
 ADD git_import.sh /virtuoso
 ADD git_update.sh /virtuoso
 ADD git_write.sh /virtuoso
+ADD dump_one_graph.virtuoso /virtuoso
 
 RUN chmod 0744 /virtuoso/import.sh
 RUN chmod 0744 /virtuoso/git_import.sh

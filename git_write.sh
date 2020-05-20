@@ -73,11 +73,27 @@ fi
 # Give some more seconds to the virtuoso to really accept updates
 sleep 3
 
-echo '[INFO] $dt Starting dump process...';
+echo "[INFO] $dt Starting dump process...";
 
-run_virtuoso_cmd "dump_one_graph(\"${GRAPH_URI}\", \"${export_dir}/data_\", 1000000000);"
+rm -rf $export_dir/*
+mkdir $export_dir/tmp
+
+# First define the procedure
+
+command=`cat ../dump_one_graph.virtuoso>&1`
+run_virtuoso_cmd "$command"
+
+run_virtuoso_cmd "dump_one_graph('${GRAPH_URI}', '/files/data_', 1000000000);"
 
 echo "[INFO] dump done;"
+ls -hal
+
+
+# normalisierung: cat data-in.nt | LC_ALL=C sort -u > data-out.nt
+for file in *.ttl*; do
+    cat $file | LC_ALL=C sort -u > $export_dir/tmp/$file
+done
+ls -hal tmp
 
 # Create dir if not existing
 if [ -d "$GIT_DIRECTORY" ]; then
@@ -88,6 +104,8 @@ else
 fi
 
 cd $GIT_DIRECTORY
+git config --global user.email "$GIT_EMAIL"
+git config --global user.name "$GIT_NAME"
 
 # Check if valid repository - if not clone
 lines=`git status | wc -l`
@@ -104,7 +122,9 @@ fi
 
 echo "[INFO] git repo now up to date. Copy now files and crate a commit."
 
-cp $export_dir/* $GIT_DIRECTORY/
+cp $export_dir/tmp/* $GIT_DIRECTORY/
+
+rm -rf $export_dir/tmp
 
 # Check if files changed
 lines=`git status | grep .ttl | wc -l`
@@ -114,6 +134,7 @@ if [ $lines -lt 2 ]; then
     exit
 fi
 
+git add .
 git commit -am "Automatic commit message from virtuoso-import-docker: Update of repository"
 git push
 

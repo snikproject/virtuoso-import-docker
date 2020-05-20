@@ -3,10 +3,14 @@ version: "3.7"
 services:
     virtuoso:
         image: tenforce/virtuoso
+        environment:
+            VIRT_Parameters_DirsAllowed: ., /usr/local/virtuoso-opensource/share/virtuoso/vad, /files
+        volumes:
+            - files:/files
             
     importer:
         build: ./
-        command: /virtuoso/import.sh # Use whatever script you need here
+        command: /virtuoso/git_write.sh # Use whatever script you need here
         environment:
             DBA_PASSWORD: dba
             VIRTUOSO_IMPORT_DIR: /tmp
@@ -14,3 +18,12 @@ services:
             GRAPH_URI: http://pfarrerbuch.aksw.org/sachsen/
             VIRTUOSO_EXPORT_DIR: /virtuoso/data
             GIT_DIRECTORY: /virtuoso/git
+            GIT_USER: TBoonX
+            GIT_PASSWORD: test
+            GIT_EMAIL: tboonx@googlemail.com
+            GIT_NAME: Kurt Junghanns
+        volumes:
+            - files:/virtuoso/data
+
+volumes:
+    files: {}
