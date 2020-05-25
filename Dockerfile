@@ -11,6 +11,7 @@ RUN mkdir /virtuoso
 RUN mkdir /virtuoso/local
 RUN mkdir /virtuoso/git
 RUN mkdir /virtuoso/data
+RUN mkdir /root/.ssh && ssh-keyscan -t rsa github.com >> /root/.ssh/known_hosts && chmod 0644 /root/.ssh
 
 ADD import.sh /virtuoso
 ADD git_import.sh /virtuoso

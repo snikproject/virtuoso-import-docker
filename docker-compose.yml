@@ -14,16 +14,16 @@ services:
         environment:
             DBA_PASSWORD: dba
             VIRTUOSO_IMPORT_DIR: /tmp
-            GIT_REPO: https://github.com/AKSW/pfarrerbuch.jekyllrdf.git
+            GIT_REPO: git@github.com:TBoonX/test_rdf_repo.git
             GRAPH_URI: http://pfarrerbuch.aksw.org/sachsen/
             VIRTUOSO_EXPORT_DIR: /virtuoso/data
             GIT_DIRECTORY: /virtuoso/git
-            GIT_USER: TBoonX
-            GIT_PASSWORD: test
             GIT_EMAIL: tboonx@googlemail.com
             GIT_NAME: Kurt Junghanns
         volumes:
             - files:/virtuoso/data
+            - ./id_rsa:/root/.ssh/id_rsa
+            - ./config:/root/.ssh/config
 
 volumes:
     files: {}
