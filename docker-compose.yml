@@ -18,7 +18,7 @@ services:
             GRAPH_URI: http://pfarrerbuch.aksw.org/sachsen/
             VIRTUOSO_EXPORT_DIR: /virtuoso/data
             GIT_DIRECTORY: /virtuoso/git
-            GIT_EMAIL: tboonx@googlemail.com
+            GIT_EMAIL: 
             GIT_NAME: Kurt Junghanns
         volumes:
             - files:/virtuoso/data
