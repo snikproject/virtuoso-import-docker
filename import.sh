@@ -78,6 +78,8 @@ bz2_to_gz () {
 }
 
 cd "$store_import_dir"
+pwd
+ls -hal
 
 bz2_to_gz "$store_import_dir"
 
@@ -105,7 +107,14 @@ done
 echo "[INFO] registring RDF documents for import"
 for ext in nt nq owl rdf trig ttl xml gz; do
   # documentation: # http://docs.openlinksw.com/virtuoso/fn_ld_dir/
-  run_virtuoso_cmd "ld_dir ('${store_import_dir}', '*.${ext}', NULL);"
+  
+  lines=`ls -hal *.$ext | grep $ext | wc -l`
+  lines=$(($lines + 1))
+  if [ $lines -gt 1 ]; then
+      echo "[INFO] now loading the following files: $(ls -hal *.$ext)"
+  fi
+  
+  run_virtuoso_cmd "ld_dir ('/files', '*.${ext}', NULL);"
 done
 
 echo "[INFO] deactivating auto-indexing"
