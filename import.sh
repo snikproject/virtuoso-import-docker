@@ -78,8 +78,6 @@ bz2_to_gz () {
 }
 
 cd "$store_import_dir"
-pwd
-ls -hal
 
 bz2_to_gz "$store_import_dir"
 

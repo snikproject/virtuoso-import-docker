@@ -74,7 +74,7 @@ fi
 sleep 3
 
 echo "[INFO] $dt Starting dump process...";
-
+# clean working dir
 rm -rf $export_dir/*
 mkdir $export_dir/tmp
 
@@ -86,16 +86,12 @@ run_virtuoso_cmd "$command"
 run_virtuoso_cmd "dump_one_graph('${GRAPH_URI}', '/files/data_', 1000000000);"
 
 echo "[INFO] dump done;"
-pwd
-ls -hal
 
 
-# Normalisierung
+# Sorting of triples
 for file in *.ttl*; do
     cat $file | LC_ALL=C sort -u > $export_dir/tmp/$file
 done
-pwd
-ls -hal tmp
 
 # Create dir if not existing
 if [ -d "$GIT_DIRECTORY" ]; then
