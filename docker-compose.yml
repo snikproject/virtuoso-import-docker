@@ -12,14 +12,14 @@ services:
         build: ./
         command: /virtuoso/git_write.sh # Use whatever script you need here
         environment:
-            DBA_PASSWORD: dba
-            VIRTUOSO_IMPORT_DIR: /tmp
-            GIT_REPO: git@github.com:TBoonX/test_rdf_repo.git
-            GRAPH_URI: http://pfarrerbuch.aksw.org/sachsen/
+            DBA_PASSWORD: ${DBA_PASSWORD}
+            VIRTUOSO_IMPORT_DIR: /virtuoso/data
+            GIT_REPO: ${GIT_REPO}
+            GRAPH_URI: ${GRAPH_URI}
             VIRTUOSO_EXPORT_DIR: /virtuoso/data
             GIT_DIRECTORY: /virtuoso/git
-            GIT_EMAIL: 
-            GIT_NAME: Kurt Junghanns
+            GIT_EMAIL: ${GIT_EMAIL}
+            GIT_NAME: ${GIT_NAME}
         volumes:
             - files:/virtuoso/data
             - ./id_rsa:/root/.ssh/id_rsa
