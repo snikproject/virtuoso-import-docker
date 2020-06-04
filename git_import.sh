@@ -7,11 +7,15 @@ if [ -z "$GIT_REPO" ]; then
     echo "[ERROR] git repo not given. Stop here."
 else
 	#clean the import folder
-	rm -r $VIRTUOSO_IMPORT_DIR/*
-	rm -r $VIRTUOSO_IMPORT_DIR/.git
+	rm -r $GIT_DIRECTORY/*
+	rm -r $GIT_DIRECTORY/.git
 	#git clone to import volume
-	git clone $GIT_REPO $VIRTUOSO_IMPORT_DIR
+	git clone $GIT_REPO $GIT_DIRECTORY
     echo "[INFO] git repo cloned. Continue with import."
-	ls -hal $VIRTUOSO_IMPORT_DIR
+	ls -hal $GIT_DIRECTORY
+	
+	rm -rf $VIRTUOSO_DATA_DIR/*
+	cp $GIT_DIRECTORY/* $VIRTUOSO_DATA_DIR/
+	
     /virtuoso/import.sh
 fi

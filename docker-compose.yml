@@ -10,16 +10,16 @@ services:
             
     importer:
         build: ./
-        command: /virtuoso/git_write.sh # Use whatever script you need here
+        command: /virtuoso/envsetter.sh # Use whatever script you need here
         environment:
             DBA_PASSWORD: ${DBA_PASSWORD}
-            VIRTUOSO_IMPORT_DIR: /virtuoso/data
+            VIRTUOSO_DATA_DIR: /virtuoso/data
             GIT_REPO: ${GIT_REPO}
             GRAPH_URI: ${GRAPH_URI}
-            VIRTUOSO_EXPORT_DIR: /virtuoso/data
             GIT_DIRECTORY: /virtuoso/git
             GIT_EMAIL: ${GIT_EMAIL}
             GIT_NAME: ${GIT_NAME}
+            CRON_JOB: ${CRON_JOB} #update or import
         volumes:
             - files:/virtuoso/data
             - ./id_rsa:/root/.ssh/id_rsa

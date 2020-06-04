@@ -16,7 +16,7 @@ port=1111
 user="dba"
 password=${DBA_PASSWORD}
 
-export_dir="${VIRTUOSO_EXPORT_DIR}"
+export_dir="${VIRTUOSO_DATA_DIR}"
 
 # Wrap the execution of isql commands to receive the return code and output
 run_virtuoso_cmd () {
@@ -114,6 +114,7 @@ lines=$(($lines + 1))
 if [ $lines -lt 3 ]; then
     echo "[INFO] Repository is not a git directory. Clone now"
     rm -rf $GIT_DIRECTORY/*
+    rm -rf $GIT_DIRECTORY/.git
     git clone $GIT_REPO $GIT_DIRECTORY
 else
     echo "[INFO] Repository update ..."
@@ -138,4 +139,4 @@ git add .
 git commit -am "Automatic commit message from virtuoso-import-docker: Update of repository at $dt"
 git push
 
-echo "[INFO] Repository now up to date. Exit."
+echo "[INFO] Exit."

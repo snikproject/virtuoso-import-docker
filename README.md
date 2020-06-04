@@ -13,10 +13,9 @@ The link alias for the import container has to be `virtuoso`.
 `import.sh` is used to import directories of rdf graphs into virtuoso with the built-in loading process (http://vos.openlinksw.com/owiki/wiki/VOS/VirtBulkRDFLoader).
 We currently support uncompressed graph files, but also gzip and bzip2 compressed graph files. You should prefer to use gzip, as the bzip2 files are transformed to gzip. xz does currently not work.
 
-To start the container, it requires some environment variables:
+To start the container, it requires some environment variables (in an .env file):
 
 - `DBA_PASSWORD`: The virtuoso password. It should be the same as what you provide to the `tenforce/virtuoso`.
-- `VIRTUOSO_IMPORT_DIR`: The location of the models to be imported. It should be linked as a common volume to `tenforce/virtuoso` and the importer. The path should also be the same within both containers.
 - `GIT_REPO`: The URL of the repository used via `git clone` and SSH.
 - `GIT_EMAIL`: The e-mail address of the user which should create and push commits.
 - `GIT_NAME`: The name of the user which should create and push commits.
@@ -24,10 +23,10 @@ To start the container, it requires some environment variables:
 
 Either you run the container 
 
-- with /virtuoso/import.sh as command for importing data from the volume or
+- with /virtuoso/import.sh as command for importing data from VIRTUOSO_IMPORT_DIR or
 - /virtuoso/git_import.sh for importing data one time from the repository or
 - /virtuoso/git_write.sh in order to use data from virtuoso and update with it the repository or
-- without any command in order to enable cron for pulling the repository every 5 minutes and write it into virtuoso.
+- without any command (delete the whole line) in order to enable cron for pulling the repository every 5 minutes and write it into virtuoso.
 
 # Information for the future
 

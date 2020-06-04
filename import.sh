@@ -12,7 +12,7 @@ port=1111
 user="dba"
 password=${DBA_PASSWORD}
 
-store_import_dir="${VIRTUOSO_IMPORT_DIR}"
+store_import_dir="${VIRTUOSO_DATA_DIR}"
 
 # Wrap the execution of isql commands to receive the return code and output
 run_virtuoso_cmd () {
