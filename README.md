@@ -20,13 +20,14 @@ To start the container, it requires some environment variables (in an .env file)
 - `GIT_EMAIL`: The e-mail address of the user which should create and push commits.
 - `GIT_NAME`: The name of the user which should create and push commits.
 - `GRAPH_URI`: The URI of the graph which should be copied into the repo.
+- `CRON_JOB`: 'update' or 'import'
 
 Either you run the container 
 
 - with /virtuoso/import.sh as command for importing data from VIRTUOSO_IMPORT_DIR or
 - /virtuoso/git_import.sh for importing data one time from the repository or
 - /virtuoso/git_write.sh in order to use data from virtuoso and update with it the repository or
-- without any command (delete the whole line) in order to enable cron for pulling the repository every 5 minutes and write it into virtuoso.
+- without any command (delete the whole line) in order to enable cron. Cron executes git_import or git_update (depending on 'CRON_JOB') every 5 minutes.
 
 # Information for the future
 
