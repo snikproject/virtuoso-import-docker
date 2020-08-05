@@ -83,7 +83,7 @@ command=`cat ../dump_one_graph.virtuoso>&1`
 run_virtuoso_cmd "$command"
 
 # Now use it to dump
-run_virtuoso_cmd "dump_one_graph('${GRAPH_URI}', '/files/data_', 1000000000);"
+run_virtuoso_cmd "dump_one_graph('${GRAPH_URI}', '${export_dir}/data_', 1000000000);"
 
 echo "[INFO] dump done;"
 

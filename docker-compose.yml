@@ -4,10 +4,10 @@ services:
     virtuoso:
         image: tenforce/virtuoso
         environment:
-            VIRT_Parameters_DirsAllowed: ., /usr/local/virtuoso-opensource/share/virtuoso/vad, /files
+            VIRT_Parameters_DirsAllowed: ., /usr/local/virtuoso-opensource/share/virtuoso/vad, /virtuoso/data
         volumes:
-            - files:/files
-            
+            - files:/virtuoso/data
+
     importer:
         build: ./
         command: /virtuoso/envsetter.sh # Use whatever script you need here
