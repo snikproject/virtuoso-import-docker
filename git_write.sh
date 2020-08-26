@@ -20,17 +20,17 @@ export_dir="${VIRTUOSO_DATA_DIR}"
 
 # Wrap the execution of isql commands to receive the return code and output
 run_virtuoso_cmd () {
-  VIRT_OUTPUT=`echo "$1" | "$bin" -H "$host" -S "$port" -U "$user" -P "$password" 2>&1`
-  VIRT_RETCODE=$?
-  if [[ $VIRT_RETCODE -eq 0 ]]; then
-    echo "$VIRT_OUTPUT" | tail -n+5 | perl -pe 's|^SQL> ||g'
-    return 0
-  else
-    echo -e "[ERROR] running the these commands in virtuoso:\n$1\nerror code: $VIRT_RETCODE\noutput:"
-    echo "$VIRT_OUTPUT"
-    let 'ret = VIRT_RETCODE + 128'
-    return $ret
-  fi
+    VIRT_OUTPUT=`echo "$1" | "$bin" -H "$host" -S "$port" -U "$user" -P "$password" 2>&1`
+    VIRT_RETCODE=$?
+    if [[ $VIRT_RETCODE -eq 0 ]]; then
+        echo "$VIRT_OUTPUT" | tail -n+5 | perl -pe 's|^SQL> ||g'
+        return 0
+    else
+        echo -e "[ERROR] running the these commands in virtuoso:\n$1\nerror code: $VIRT_RETCODE\noutput:"
+        echo "$VIRT_OUTPUT"
+        let 'ret = VIRT_RETCODE + 128'
+        return $ret
+    fi
 }
 
 # Check if the virtuoso is up and running
@@ -97,8 +97,8 @@ done
 if [ -d "$GIT_DIRECTORY" ]; then
   :
 else
-  ###  Control will jump here if $DIR does NOT exists ###
-  mkdir -p $GIT_DIRECTORY
+    ###  Control will jump here if $DIR does NOT exists ###
+    mkdir -p $GIT_DIRECTORY
 fi
 
 # Setup of git
