@@ -16,13 +16,14 @@ We currently support uncompressed graph files, but also gzip and bzip2 compresse
 To start the container, it requires some environment variables (in an .env file):
 
 - `DBA_PASSWORD`: The virtuoso password. It should be the same as what you provide to the `tenforce/virtuoso`.
+- `VIRTUOSO_DATA_DIR`: The directory into which the data is cloned and from where it is imported into virtuoso. The location of this directory should be the same for this import container as for the virtuoso container.
 - `GIT_REPO`: The URL of the repository used via `git clone` and SSH.
 - `GIT_EMAIL`: The e-mail address of the user which should create and push commits.
 - `GIT_NAME`: The name of the user which should create and push commits.
 - `GRAPH_URI`: The URI of the graph which should be copied into the repo.
 - `CRON_JOB`: 'update' or 'import'
 
-Either you run the container 
+Either you run the container
 
 - with /virtuoso/import.sh as command for importing data from VIRTUOSO_IMPORT_DIR or
 - /virtuoso/git_import.sh for importing data one time from the repository or
