@@ -22,11 +22,11 @@ if [ $status -ne 0 ]; then
         fi
         git clone $GIT_REPO $VIRTUOSO_DATA_DIR
 else
-    echo "[INFO] Update repository ..."
+    echo "[INFO] Update repository (git pull) ..."
     git pull
 fi
 
-echo "[INFO] git repo cloned. Continue with import."
+echo "[INFO] git repo cloned/pulled. Continue with import."
 ls -hal $VIRTUOSO_DATA_DIR
 
 /virtuoso/import.sh
