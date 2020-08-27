@@ -62,7 +62,7 @@ git commit -am "Automatic commit message from virtuoso-import-docker: Update of 
 # Write current commit id to our local file to avoid reimporting it
 git rev-parse HEAD > .virtuoso-import-last-commit
 
-if [ -z $NO_PUSH ]; then
+if [ -z "$NO_PUSH" ]; then
     git push
     push_status=$?
 
