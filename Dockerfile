@@ -6,7 +6,7 @@ LABEL org.aksw.dld=true org.aksw.dld.type="import" org.aksw.dld.require.store="v
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update
-RUN apt-get install -y git pigz pbzip2 virtuoso-opensource cron
+RUN apt-get install -y git pigz pbzip2 virtuoso-opensource raptor2-utils cron
 RUN mkdir /virtuoso
 RUN mkdir /virtuoso/git
 RUN mkdir /virtuoso/data
