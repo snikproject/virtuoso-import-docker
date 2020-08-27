@@ -44,16 +44,7 @@ fi
 
 echo "[INFO] git repo now up to date. Dump new data."
 
-# TODO export multiple graphs
-# check which serialization formats are used
 /virtuoso/dump.sh
-
-# Sorting of triples
-for file in *.ttl; do
-    cat $file | rapper -i turtle | LC_ALL=C sort -u > $export_dir/tmp/${file%.ttl}.nt
-done
-
-# move files to the correct locations and names if not done already
 
 # Check if files changed
 git status --porcelain | grep '^.[MTD] '
@@ -68,7 +59,7 @@ fi
 echo "[INFO] Create new commit."
 git commit -am "Automatic commit message from virtuoso-import-docker: Update of repository at $dt"
 
-# Write current commit id to our file to avoid reimporting it
+# Write current commit id to our local file to avoid reimporting it
 git rev-parse HEAD > .virtuoso-import-last-commit
 
 git push

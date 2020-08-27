@@ -74,7 +74,18 @@ run_virtuoso_cmd "$command"
 
 echo "[INFO] $dt Starting dump process...";
 
-# Now use it to dump
-run_virtuoso_cmd "dump_one_graph('${GRAPH_URI}', '${export_dir}/data_', 1000000000);"
+echo "[INFO] initializing named graphs from *.graph files"
+for ext in nt owl rdf ttl xml; do
+    for graph_file in *${ext}.graph; do
+        graph=`head -n1 ${graph_file}`
+
+        # Now use it to dump
+        run_virtuoso_cmd "dump_one_graph('${graph}', '${export_dir}/tmp_data_', 1000000000);"
+        exportfile="${export_dir}/tmp_data_000001.ttl"
+        cat $exportfile | rapper -i turtle | LC_ALL=C sort -u > $export_dir/${graph_file%.graph}
+        rm '$exportfile'
+        rm '"$exportfile.graph"'
+    done
+done
 
 echo "[INFO] dump done;"
