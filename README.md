@@ -20,7 +20,6 @@ To start the container, it requires some environment variables (in an .env file)
 - `GIT_REPO`: The URL of the repository used via `git clone` and SSH.
 - `GIT_EMAIL`: The e-mail address of the user which should create and push commits.
 - `GIT_NAME`: The name of the user which should create and push commits.
-- `GRAPH_IRIS`: The IRIs of the graphs which should be copied into the repo.
 - `CRON_JOB`: 'dump' or 'import'
 
 You can run the container with one of the following commands:
@@ -30,6 +29,8 @@ You can run the container with one of the following commands:
 - `/virtuoso/dump.sh` as command to dump data into VIRTUOSO_IMPORT_DIR or
 - `/virtuoso/git_dump.sh` in order to dump the data from virtuoso into a repository, commit and push it or
 - without any command (delete the whole `command` line) in order to enable cron. Cron executes `git_import` or `git_dump` (depending on the value of the variable `CRON_JOB`) every 5 minutes.
+
+For the dump process the graphs are automatically detected based on the `*.graph` files in the `VIRTUOSO_DATA_DIR`.
 
 # Information for the future
 
