@@ -22,6 +22,7 @@ To start the container, it requires some environment variables (in an .env file)
 - `GIT_NAME`: The name of the user which should create and push commits.
 - `NO_PUSH`: Disable push operation
 - `CRON_JOB`: 'dump' or 'import'
+- `CRON_TIMES`: Set the timing for the cron job. Per default it is `1,6,11,16,21,26,31,36,41,46,51,56 * * * *` (see https://en.wikipedia.org/wiki/Cron for details).
 
 You can run the container with one of the following commands:
 
