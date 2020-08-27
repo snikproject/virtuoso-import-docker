@@ -7,136 +7,75 @@ ${DLD_DEV:=}
 
 dt=$(date '+%d/%m/%Y %H:%M:%S')
 
-# http://docs.openlinksw.com/virtuoso/rdfperfdumpandreloadgraphs/
-
-# Definition of the isql connection to Virtuoso
-bin="isql-vt"
-host="virtuoso"
-port=1111
-user="dba"
-password=${DBA_PASSWORD}
-
 export_dir="${VIRTUOSO_DATA_DIR}"
 
-# Wrap the execution of isql commands to receive the return code and output
-run_virtuoso_cmd () {
-    VIRT_OUTPUT=`echo "$1" | "$bin" -H "$host" -S "$port" -U "$user" -P "$password" 2>&1`
-    VIRT_RETCODE=$?
-    if [[ $VIRT_RETCODE -eq 0 ]]; then
-        echo "$VIRT_OUTPUT" | tail -n+5 | perl -pe 's|^SQL> ||g'
-        return 0
-    else
-        echo -e "[ERROR] running the these commands in virtuoso:\n$1\nerror code: $VIRT_RETCODE\noutput:"
-        echo "$VIRT_OUTPUT"
-        let 'ret = VIRT_RETCODE + 128'
-        return $ret
-    fi
-}
-
-# Check if the virtuoso is up and running
-# This is needed during the bootstrapping process in a docker setup
-test_connection () {
-    if [[ -z $1 ]]; then
-        echo "[ERROR] missing argument: retry attempts"
-        exit 1
-    fi
-
-    t=$1
-
-    run_virtuoso_cmd 'status();'
-    while [[ $? -ne 0 ]] ;
-    do
-        echo -n "."
-        sleep 1
-        echo $t
-        let "t=$t-1"
-        if [ $t -eq 0 ]
-        then
-            echo "timeout"
-            return 2
-        fi
-        run_virtuoso_cmd 'status();'
-    done
-}
-
-cd "$export_dir"
-
-echo "[INFO] waiting for store to come online"
-
-: ${CONNECTION_ATTEMPTS:=60}
-test_connection "${CONNECTION_ATTEMPTS}"
-if [ $? -eq 2 ]; then
-    echo "[ERROR] store not reachable"
-    exit 1
-fi
-
-# Give some more seconds to the virtuoso to really accept updates
-sleep 3
-
-echo "[INFO] $dt Starting dump process...";
-# clean working dir
-rm -rf $export_dir/*
-mkdir $export_dir/tmp
-
-# First define the procedure
-command=`cat ../dump_one_graph.virtuoso>&1`
-run_virtuoso_cmd "$command"
-
-# Now use it to dump
-run_virtuoso_cmd "dump_one_graph('${GRAPH_URI}', '${export_dir}/data_', 1000000000);"
-
-echo "[INFO] dump done;"
-
-
-# Sorting of triples
-for file in *.ttl*; do
-    cat $file | LC_ALL=C sort -u > $export_dir/tmp/$file
-done
-
-# Create dir if not existing
-if [ -d "$GIT_DIRECTORY" ]; then
-  :
-else
-    ###  Control will jump here if $DIR does NOT exists ###
-    mkdir -p $GIT_DIRECTORY
-fi
-
 # Setup of git
-cd $GIT_DIRECTORY
 git config --global user.email "$GIT_EMAIL"
 git config --global user.name "$GIT_NAME"
-chmod 600 /root/.ssh/id_rsa
 
-# Check if valid repository - if not clone
-lines=`git status | wc -l`
-lines=$(($lines + 1))
+cd $export_dir
 
-if [ $lines -lt 3 ]; then
-    echo "[INFO] Repository is not a git directory. Clone now"
-    rm -rf $GIT_DIRECTORY/*
-    rm -rf $GIT_DIRECTORY/.git
-    git clone $GIT_REPO $GIT_DIRECTORY
+# Check if already a repository
+git status
+status=$?
+
+# Initialize the repository
+if [ $status -ne 0 ]; then
+    echo "[INFO] Repository is not a git directory."
+
+    if [ -n "$(ls -A $export_dir)" ]; then
+        echo "[ERROR] Target directory is not empty. Can't clone or initialize."
+        exit 102
+    fi
+
+    # Git as target?
+    if [ -z "$GIT_REPO" ]; then
+        #data is in import volume
+        echo "[INFO] $dt git repo URL not given. Initialize a new repo."
+        git init $export_dir
+    else
+        echo "[INFO] $dt clone the repo from the remote location."
+        git clone $GIT_REPO $export_dir
+    fi
 else
-    echo "[INFO] Repository update ..."
+    echo "[INFO] Pull changes for the repository ..."
     git pull
 fi
 
-echo "[INFO] git repo now up to date. Copy now files and create a commit."
+echo "[INFO] git repo now up to date. Dump new data."
 
-cp $export_dir/tmp/* $GIT_DIRECTORY/
+# TODO export multiple graphs
+# check which serialization formats are used
+/virtuoso/dump.sh
 
-rm -rf $export_dir/tmp
+# Sorting of triples
+for file in *.ttl; do
+    cat $file | rapper -i turtle | LC_ALL=C sort -u > $export_dir/tmp/${file%.ttl}.nt
+done
+
+# move files to the correct locations and names if not done already
 
 # Check if files changed
-lines=`git status | grep .ttl | wc -l`
-lines=$(($lines + 1))
-if [ $lines -lt 2 ]; then
+git status --porcelain | grep '^.[MTD] '
+change_status=$?
+# change_status is 0 if changes are detected and not 0 if no changes were detected
+
+if [ $change_status -ne 0 ]; then
     echo "[INFO] Repository needs no update. Abort."
-    exit
+    exit 0
 fi
 
-git add .
+echo "[INFO] Create new commit."
 git commit -am "Automatic commit message from virtuoso-import-docker: Update of repository at $dt"
+
+# Write current commit id to our file to avoid reimporting it
+git rev-parse HEAD > .virtuoso-import-last-commit
+
 git push
+push_status=$?
+
+if [ $push_status -ne 0 ]; then
+    echo "[INFO] Could not push, but the data is commited within the container."
+fi
 
 echo "[INFO] Exit."
