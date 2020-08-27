@@ -13,16 +13,16 @@ RUN mkdir /virtuoso/data
 RUN mkdir /root/.ssh && ssh-keyscan -t rsa github.com >> /root/.ssh/known_hosts && chmod 0644 /root/.ssh
 
 ADD import.sh /virtuoso
+ADD dump.sh /virtuoso
 ADD git_import.sh /virtuoso
-ADD git_update.sh /virtuoso
-ADD git_write.sh /virtuoso
+ADD git_dump.sh /virtuoso
 ADD dump_one_graph.virtuoso /virtuoso
 ADD cronscript.sh /virtuoso
 
 RUN chmod 0744 /virtuoso/import.sh
+RUN chmod 0744 /virtuoso/dump.sh
 RUN chmod 0744 /virtuoso/git_import.sh
-RUN chmod 0744 /virtuoso/git_update.sh
-RUN chmod 0744 /virtuoso/git_write.sh
+RUN chmod 0744 /virtuoso/git_dump.sh
 RUN chmod 0744 /virtuoso/cronscript.sh
 
 WORKDIR /virtuoso
