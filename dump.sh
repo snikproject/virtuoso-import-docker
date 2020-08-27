@@ -90,7 +90,7 @@ for ext in nt rdf ttl xml; do
         run_virtuoso_cmd "dump_one_graph('${graph}', '${export_dir}/tmp_data_', 1000000000);"
         exportfile="tmp_data_000001.ttl"
         # Check if the repository contains a custom normalize script
-        if [ -f ./normalize.sh ]; do
+        if [ -f ./normalize.sh ]; then
             mv $exportfile ${graph_file%.graph}
             ./normalize.sh ${graph_file%.graph}
         else
