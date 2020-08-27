@@ -88,8 +88,13 @@ for ext in nt rdf ttl xml; do
         echo "[INFO] dump graph $graph to ${graph_file%.graph}"
         # Now use it to dump
         run_virtuoso_cmd "dump_one_graph('${graph}', '${export_dir}/tmp_data_', 1000000000);"
-        exportfile="${export_dir}/tmp_data_000001.ttl"
-        rapper -i turtle -o ${serializer[$ext]} $exportfile | LC_ALL=C sort -u > $export_dir/${graph_file%.graph}
+        exportfile="tmp_data_000001.ttl"
+        if [ -f ./normalize.sh ]; do
+            mv $exportfile ${graph_file%.graph}
+            ./normalize.sh ${graph_file%.graph}
+        else
+            rapper -q -i turtle -o ${serializer[$ext]} $exportfile | LC_ALL=C sort -u > ${graph_file%.graph}
+        fi
         rm "$exportfile"
         rm "$exportfile.graph"
     done
