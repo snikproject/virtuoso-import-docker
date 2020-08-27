@@ -94,7 +94,11 @@ for ext in nt rdf ttl xml; do
             mv $exportfile ${graph_file%.graph}
             ./normalize.sh ${graph_file%.graph}
         else
-            rapper -q -i turtle -o ${serializer[$ext]} $exportfile | LC_ALL=C sort -u > ${graph_file%.graph}
+            if [ $ext -eq "nt" ]; then
+                rapper -q -i turtle -o ${serializer[$ext]} $exportfile | LC_ALL=C sort -u > ${graph_file%.graph}
+            else
+                rapper -q -i turtle -o ${serializer[$ext]} $exportfile > ${graph_file%.graph}
+            fi
         fi
         rm "$exportfile"
         rm "$exportfile.graph"
