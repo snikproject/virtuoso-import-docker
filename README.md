@@ -20,6 +20,7 @@ To start the container, it requires some environment variables (in an .env file)
 - `GIT_REPO`: The URL of the repository used via `git clone` and SSH.
 - `GIT_EMAIL`: The e-mail address of the user which should create and push commits.
 - `GIT_NAME`: The name of the user which should create and push commits.
+- `NO_PUSH`: Disable push operation
 - `CRON_JOB`: 'dump' or 'import'
 
 You can run the container with one of the following commands:

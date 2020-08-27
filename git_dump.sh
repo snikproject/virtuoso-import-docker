@@ -62,11 +62,13 @@ git commit -am "Automatic commit message from virtuoso-import-docker: Update of 
 # Write current commit id to our local file to avoid reimporting it
 git rev-parse HEAD > .virtuoso-import-last-commit
 
-git push
-push_status=$?
+if [ -z $NO_PUSH ]; then
+    git push
+    push_status=$?
 
-if [ $push_status -ne 0 ]; then
-    echo "[INFO] Could not push, but the data is commited within the container."
+    if [ $push_status -ne 0 ]; then
+        echo "[INFO] Could not push, but the data is commited within the container."
+    fi
 fi
 
 echo "[INFO] Exit."
