@@ -78,6 +78,11 @@ echo "[INFO] initializing named graphs from *.graph files"
 declare -A serializer=( ["nt"]="ntriples" ["rdf"]="rdfxml" ["xml"]="rdfxml" ["ttl"]="turtle")
 for ext in nt rdf ttl xml; do
     for graph_file in *.${ext}.graph; do
+        if [ ! -f ${graph_file} ]; then
+            # skip when the loop iterates varbatom "*.xml.graph" files
+            continue
+        fi
+
         graph=`head -n1 ${graph_file}`
 
         # Now use it to dump
