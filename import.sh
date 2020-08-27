@@ -16,17 +16,17 @@ store_import_dir="${VIRTUOSO_DATA_DIR}"
 
 # Wrap the execution of isql commands to receive the return code and output
 run_virtuoso_cmd () {
-  VIRT_OUTPUT=`echo "$1" | "$bin" -H "$host" -S "$port" -U "$user" -P "$password" 2>&1`
-  VIRT_RETCODE=$?
-  if [[ $VIRT_RETCODE -eq 0 ]]; then
-    echo "$VIRT_OUTPUT" | tail -n+5 | perl -pe 's|^SQL> ||g'
-    return 0
-  else
-    echo -e "[ERROR] running the these commands in virtuoso:\n$1\nerror code: $VIRT_RETCODE\noutput:"
-    echo "$VIRT_OUTPUT"
-    let 'ret = VIRT_RETCODE + 128'
-    return $ret
-  fi
+    VIRT_OUTPUT=`echo "$1" | "$bin" -H "$host" -S "$port" -U "$user" -P "$password" 2>&1`
+    VIRT_RETCODE=$?
+    if [[ $VIRT_RETCODE -eq 0 ]]; then
+        echo "$VIRT_OUTPUT" | tail -n+5 | perl -pe 's|^SQL> ||g'
+        return 0
+    else
+        echo -e "[ERROR] running the these commands in virtuoso:\n$1\nerror code: $VIRT_RETCODE\noutput:"
+        echo "$VIRT_OUTPUT"
+        let 'ret = VIRT_RETCODE + 128'
+        return $ret
+    fi
 }
 
 # Check if the virtuoso is up and running
@@ -104,15 +104,15 @@ done
 #(since we have to excluse graph-files *.* won't do the trick
 echo "[INFO] registring RDF documents for import"
 for ext in nt nq owl rdf trig ttl xml gz; do
-  # documentation: # http://docs.openlinksw.com/virtuoso/fn_ld_dir/
+    # documentation: # http://docs.openlinksw.com/virtuoso/fn_ld_dir/
 
-  lines=`ls -hal *.$ext | grep $ext | wc -l`
-  lines=$(($lines + 1))
-  if [ $lines -gt 1 ]; then
-      echo "[INFO] now loading the following files: $(ls -hal *.$ext)"
-  fi
+    lines=`ls -hal *.$ext | grep $ext | wc -l`
+    lines=$(($lines + 1))
+    if [ $lines -gt 1 ]; then
+        echo "[INFO] now loading the following files: $(ls -hal *.$ext)"
+    fi
 
-  run_virtuoso_cmd "ld_dir ('${store_import_dir}', '*.${ext}', NULL);"
+    run_virtuoso_cmd "ld_dir ('${store_import_dir}', '*.${ext}', NULL);"
 done
 
 echo "[INFO] deactivating auto-indexing"
