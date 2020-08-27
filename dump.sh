@@ -99,8 +99,8 @@ for ext in nt rdf ttl xml; do
             else
                 rapper -q -i turtle -o ${serializer[$ext]} $exportfile > ${graph_file%.graph}
             fi
+            rm "$exportfile"
         fi
-        rm "$exportfile"
         rm "$exportfile.graph"
     done
 done
