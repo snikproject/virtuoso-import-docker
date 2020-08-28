@@ -43,7 +43,7 @@ test_connection () {
     while [[ $? -ne 0 ]] ;
     do
         echo -n "."
-        sleep 1
+        sleep 2
         echo $t
         let "t=$t-1"
         if [ $t -eq 0 ]
