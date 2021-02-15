@@ -46,23 +46,33 @@ echo "[INFO] git repo now up to date. Dump new data."
 
 /virtuoso/dump.sh
 
-# Check if files changed
+# Check if files changed or commits need to be pushed
 git status --porcelain | grep '^.[MTD] '
-change_status=$?
-# change_status is 0 if changes are detected and not 0 if no changes were detected
+change_status=$((1-$?))
 
-if [ $change_status -ne 0 ]; then
+git status --porcelain -b | grep '^## .*ahead'
+need_push=$((1-$?))
+# grep returns 0 if something was found and 1 otherwise (2 on error)
+# so we have to revert the value for change_status and need_push
+
+if [ $change_status -eq 0 ] && [ $need_push -eq 0 ]; then
     echo "[INFO] Repository needs no update. Abort."
     exit 0
 fi
 
-echo "[INFO] Create new commit."
-git commit -am "Automatic commit message from virtuoso-import-docker: Update of repository at $dt"
+if [ $change_status -ne 0 ]; then
+    echo "[INFO] Create new commit."
+    git commit -am "Automatic commit message from virtuoso-import-docker: Update of repository at $dt"
 
-# Write current commit id to our local file to avoid reimporting it
-git rev-parse HEAD > .virtuoso-import-last-commit
+    # Write current commit id to our local file to avoid reimporting it
+    git rev-parse HEAD > .virtuoso-import-last-commit
+    need_push=1
+fi
 
-if [ -z "$NO_PUSH" ]; then
+# Because we have `set -o nounset` in the beginning of the script we can not reference unset variables.
+# So we have to check of $NO_PUSH with a default value, wihc is done with ${var-default}, in this case we leave the default value empty:
+# ${NO_PUSH-}
+if [ -z "${NO_PUSH-}" ] && [ $need_push -ne 0 ]; then
     git push
     push_status=$?
 
