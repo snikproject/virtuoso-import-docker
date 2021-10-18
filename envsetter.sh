@@ -7,3 +7,6 @@ fi
 
 printenv >> /etc/environment
 cron -f
+# execute right away
+echo "Importing for the first time"
+/virtuoso/cronscript.sh
