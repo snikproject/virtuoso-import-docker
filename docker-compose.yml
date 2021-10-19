@@ -1,6 +1,7 @@
 version: "3.7"
 
 services:
+
     virtuoso:
         image: tenforce/virtuoso
         environment:
@@ -25,6 +26,20 @@ services:
             - files:/virtuoso/data
             - ./id_rsa:/root/.ssh/id_rsa
             - ./config:/root/.ssh/config
+
+    lodview:
+      image: linkeddatacenter/lodview:latest
+      environment:
+        LODVIEW_URISPACE: "http://www.snik.eu/ontology/"
+        LODVIEW_PREFIX: "snik"
+        LODVIEW_SPARQLENDPOINT: "http://konradhoeffner.de:8890/sparql"
+        LODVIEW_HOMEURL: "http://www.snik.eu/ontology/meta/Top"
+        LODVIEW_HOME_TITLE: "The SNIK Ontology"
+        LODVIEW_HOME_ABSTRACT: "Semantic Network of Hospital Information Management"
+        LODVIEW_HOME_DESCRIPTION: "Replacement RDF Browser for http://www.snik.eu/ontology."
+        LODVIEW_PUBLICURLPREFIX: "auto"
+      ports:
+        - "9090:8080"
 
 volumes:
     files: {}
